@@ -1,0 +1,11 @@
+:root {
+  --cor-primaria: #1056FF;
+  --cor-secundaria: #FFF;
+  --texto-primario: #999;
+  --texto-secundario: #333;
+}
+
+$corPrimaria: var(--cor-primaria);
+$corSecundaria: var(--cor-secundaria);
+$textoPrimario: var(--texto-primario);
+$textoSecundario: var(--texto-secundario);
