@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { take } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { catchError, take, retry } from 'rxjs/operators';
 
 import { TemasService } from './../shared/services/temas.service';
 
@@ -20,12 +21,24 @@ export class AppComponent {
   }
 
   private verificaTemaQueryString(): void {
-    this.route.queryParams.subscribe(tema => this.carregaTema(tema['tema']));
+    this.route.queryParams.subscribe(tema => {
+      let temaParametro: string = tema['tema'] ? tema['tema'] : 'default';
+      this.carregaTema(temaParametro);
+    });
   }
 
   private carregaTema(tema: string): void {
-    this.temas.carregaTema(tema)
-      .pipe(take(1)).subscribe(tema => this.carregaCores(tema))
+    let temaInformado: string = tema;
+    this.temas.carregaTema(temaInformado)
+      .pipe(
+        catchError(erro => {
+          console.log('Erro da leitura do tema -> ', erro.message);
+          temaInformado = 'default';
+          return of([]);
+        }),
+        retry(1)
+      )
+      .subscribe(tema => this.carregaCores(tema))
   }
 
   private carregaCores(tema: any = null): void {
